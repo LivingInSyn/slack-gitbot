@@ -124,7 +124,7 @@ class GitManager:
         # we should default to teams vs users
         for org_team in self._teams:
             if team.lower() == org_team.name.lower():
-                codeowners = f'# added by slack-gitbot\n* @puppetlabs/{org_team.slug}'
+                codeowners = f'# added by slack-gitbot\n* @{self._conf["github"]["org"]}/{org_team.slug}'
                 co_team = org_team
                 break
         if not codeowners:
