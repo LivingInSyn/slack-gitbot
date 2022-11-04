@@ -1,7 +1,6 @@
 import requests
 import json
 import logging
-import yaml
 from base64 import b64decode as b64d
 from github import Github, Repository, UnknownObjectException
 from github.Team import Team
@@ -18,7 +17,7 @@ class RepoExistsError(Exception):
 
 class GitManager:
     DEFAULT_REVIEWER_COUNT = 1
-    def __init__(self, gh_token: str, org: str):
+    def __init__(self, gh_token: str, org: str, conf: dict):
         self._token = gh_token
        
         self._gh = Github(gh_token)
@@ -36,12 +35,7 @@ class GitManager:
         self.visibilities = ['public', 'private', 'internal']
         # load the templates from the conf file which is expeted to be
         # in the same directory
-        self._conf = None
-        with open('./conf.yml') as conffile:
-            try:
-                self._conf = yaml.safe_load(conffile)
-            except yaml.YAMLError as e:
-                logging.fatal(f'Error loading config file. Error: {e}')
+        self._conf = conf
 
     def get_templates(self):
         return self._conf['github']['templates']

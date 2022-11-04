@@ -1,11 +1,11 @@
-from copy import deepcopy
-from multiprocessing.sharedctypes import Value
 import os
 import json
 import logging
+import yaml
+from copy import deepcopy
 from slack_bolt import App
 from slack_sdk import WebClient
-from auth_providers.auth_manager import AzureADAuthManager
+from auth_providers.azure_ad_auth import AzureADAuthManager
 from git_manager import GitManager, RepoExistsError
 
 logging.basicConfig(level=logging.INFO-1)
@@ -17,14 +17,6 @@ app = App(
 
 GIT_MANAGER: GitManager = None
 MODAL_BLOCKS = None
-# service account creds
-SA_CERT_TEXT = ''
-SA_KEY_TEXT = ''
-SA_KEY_THUMBPRINT = ''
-# group ID to check against in Azure AD
-TENNANT_ID = ''
-CLIENT_ID = ''
-GROUP_ID = ''
 # variable for the auth manager
 AUTH_MANAGER = None
 
@@ -36,27 +28,26 @@ def log_request(logger, body, next):
 
 @app.middleware
 def auth_request(logger, client, command, next, body):
+    if AUTH_MANAGER is None:
+        return next()
+    # get the user ID so we can send a message to the user
     userid = None
     if 'user' in body:
         userid = body['user']['id']
     elif 'user_id' in body:
         userid = body['user_id']
     if not userid:
-        client.chat_postEphemeral(
-            channel=user, 
-            text=f'Sorry, something went wrong. UserID not found',
-            user=user
-        )
-    user = client.users_profile_get(user=userid)
-    email = user.data['profile']['email']
-    if email.endswith('@puppet.com'):
-        return next()
-    elif AUTH_MANAGER.is_member_of(email, GROUP_ID):
+        logger.warn("Got a request without a user id, no one to send a message to!")
+        logger.debug(body)
+        return
+    # check the configured auth
+    authorized, error_msg = AUTH_MANAGER.auth_request(logger, client, command, next, body, userid)
+    if authorized:
         return next()
     else:
         client.chat_postEphemeral(
             channel=user, 
-            text=f'You are not authorized to use the new git bot',
+            text=error_msg,
             user=user
         )
 
@@ -181,22 +172,20 @@ if __name__ == "__main__":
     # get the GitHub token and build git object
     gh_token = _get_env_var('GITHUB_TOKEN')
     org = _get_env_var('GITHUB_ORG')
-    # get the service account info
-    certdir = os.environ.get('SA_CERT_DIR', '/secrets')
-    with open(f'{certdir}/cert/cert.pem', 'r') as f:
-        SA_CERT_TEXT = f.read()
-    with open(f'{certdir}/key/key.pem', 'r') as f:
-        SA_KEY_TEXT = f.read()
-    SA_KEY_THUMBPRINT = _get_env_var('SA_KEY_THUMBPRINT')
-    CLIENT_ID = _get_env_var('CLIENT_ID')
-    TENNANT_ID = _get_env_var('TENNANT_ID')
-    # get the group ID for the group we're going to look for membership of
-    GROUP_ID = _get_env_var('GROUP_ID')
+    # load the config file
+    with open('./conf.yml') as conffile:
+        try:
+            conf = yaml.safe_load(conffile)
+        except yaml.YAMLError as e:
+            logging.fatal(f'Error loading config file. Error: {e}')
     # setup the git manager
-    GIT_MANAGER = GitManager(gh_token, org)
-    # setup the auth manager. Only supports azure AD right now
-    AUTH_MANAGER = AzureADAuthManager(SA_CERT_TEXT, SA_KEY_TEXT, SA_KEY_THUMBPRINT, 
-        CLIENT_ID, TENNANT_ID)
+    GIT_MANAGER = GitManager(gh_token, org, conf)
+    # setup the auth manager. 
+    if conf['slackbot']['auth'].lower() == 'azure-ad-group':
+        logging.info("starting with azure ad auth")
+        AUTH_MANAGER = AzureADAuthManager(conf)
+    else:
+        logging.warn("starting with no authentication")
     # fill in the modal blocks
     with open('blocks.json', 'r') as f:
         bj = f.read()
