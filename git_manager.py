@@ -205,7 +205,7 @@ class GitManager:
 
 if __name__ == "__main__":
     import os
-    g = GitManager(os.getenv('GITHUB_TOKEN'), 'puppetlabs')
+    g = GitManager(os.getenv('GITHUB_TOKEN'), 'some_org')
     #t = g.get_teams()
     template = TEMPLATES[2]
     # h, c = g.create_repo('TEST_REPO_jm_a', template, 'Private', 'security', '')
