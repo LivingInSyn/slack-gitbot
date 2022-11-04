@@ -1,0 +1,79 @@
+{
+	"blocks": [
+		{
+			"type": "context",
+			"elements": [
+				{
+					"type": "plain_text",
+					"text": "Please enter the required information below:",
+					"emoji": true
+				}
+			]
+		},
+		{
+			"type": "divider"
+		},
+		{
+			"type": "input",
+			"block_id": "name",
+			"element": {
+				"action_id": "name_input",
+				"type": "plain_text_input"
+			},
+			"label": {
+				"type": "plain_text",
+				"text": "Repository Name",
+				"emoji": true
+			}
+		},
+		{
+			"type": "input",
+			"block_id": "vis",
+			"element": {
+				"type": "static_select",
+				"action_id": "vis_input",
+				"placeholder": {
+					"type": "plain_text",
+					"text": "Select an item",
+					"emoji": true
+				},
+				"options": []
+			},
+			"label": {
+				"type": "plain_text",
+				"text": "Visibility",
+				"emoji": true
+			}
+		},
+		{
+			"type": "input",
+			"block_id": "template",
+			"element": {
+				"type": "static_select",
+				"action_id": "template_input",
+				"placeholder": {
+					"type": "plain_text",
+					"text": "Select an item",
+					"emoji": true
+				},
+				"options": []
+			},
+			"label": {
+				"type": "plain_text",
+				"text": "Repo Template",
+				"emoji": true
+			}
+		},
+		{
+			"type": "input",
+			"block_id": "team",
+			"element": {
+				"type": "external_select",
+				"action_id": "es_team_a",
+				"placeholder": {"type": "plain_text", "text": "Select an item"},
+				"min_query_length": 1
+			},
+			"label": {"type": "plain_text", "text": "Team for CODEOWNERS"}
+		}
+	]
+}

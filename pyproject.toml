@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "slack-gitbot"
+version = "0.1.0"
+description = "a slackbot written in python for managing git repos"
+authors = ["Jeremy Mill <jeremymill@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+slack-bolt = "^1.11.6"
+PyGithub = "^1.55"
+adal = "^1.2.7"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
