@@ -53,8 +53,7 @@ class AzureADAuthManager:
                 return True
         return False
 
-    def auth_request(self, logger, client, command, next, body, userid):
-        user = client.users_profile_get(user=userid)
+    def auth_request(self, logger, client, command, next, body, user):
         email = user.data['profile']['email']
         if self._is_member_of(email, self._group_id):
             return True, ""

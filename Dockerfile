@@ -1,10 +1,10 @@
-FROM python:3.9-bullseye
+FROM python:3.11-bullseye
 RUN mkdir /app
 # copy required files
 COPY main.py /app
-COPY conf.py /app
+COPY conf.yml /app
 COPY git_manager.py /app
-COPY auth_manager.py /app
+COPY auth_providers /app/auth_providers
 COPY blocks.json /app
 COPY pyproject.toml /app 
 # change to workdir and setup python and poetry

@@ -17,11 +17,11 @@ class RepoExistsError(Exception):
 
 class GitManager:
     DEFAULT_REVIEWER_COUNT = 1
-    def __init__(self, gh_token: str, org: str, conf: dict):
+    def __init__(self, gh_token: str, conf: dict):
         self._token = gh_token
        
         self._gh = Github(gh_token)
-        self._org = self._gh.get_organization(org)
+        self._org = self._gh.get_organization(conf['github']['org'])
         self._headers = {
             "Authorization": f'token {self._token}',
             'Accept': 'application/vnd.github.v3+json'

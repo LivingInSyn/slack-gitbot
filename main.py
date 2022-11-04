@@ -40,8 +40,9 @@ def auth_request(logger, client, command, next, body):
         logger.warn("Got a request without a user id, no one to send a message to!")
         logger.debug(body)
         return
+    user = client.users_profile_get(user=userid)
     # check the configured auth
-    authorized, error_msg = AUTH_MANAGER.auth_request(logger, client, command, next, body, userid)
+    authorized, error_msg = AUTH_MANAGER.auth_request(logger, client, command, next, body, user)
     if authorized:
         return next()
     else:
@@ -171,17 +172,17 @@ def _get_env_var(var_name: str):
 if __name__ == "__main__":
     # get the GitHub token and build git object
     gh_token = _get_env_var('GITHUB_TOKEN')
-    org = _get_env_var('GITHUB_ORG')
     # load the config file
     with open('./conf.yml') as conffile:
         try:
             conf = yaml.safe_load(conffile)
         except yaml.YAMLError as e:
             logging.fatal(f'Error loading config file. Error: {e}')
+    
     # setup the git manager
-    GIT_MANAGER = GitManager(gh_token, org, conf)
+    GIT_MANAGER = GitManager(gh_token, conf)
     # setup the auth manager. 
-    if conf['slackbot']['auth'].lower() == 'azure-ad-group':
+    if conf['slackbot']['auth'].lower() == 'azure-ad-auth':
         logging.info("starting with azure ad auth")
         AUTH_MANAGER = AzureADAuthManager(conf)
     else:

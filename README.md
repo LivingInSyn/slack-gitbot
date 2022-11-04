@@ -1,45 +1,32 @@
 # slack-gitbot
-a slackbot using bolt 
+slack-gitbot is a tool for controlling the creation of github repositories through chatops
 
 ## Environmental Variables
+
+The following environmental variables must be set.
+
 | Variable Name | Secret | Description |
 | ------------- | ------ | ----------- |
 | SLACK_BOT_TOKEN | True | The Slack bot token from the oauth tab of the bot configuration page in slack (`xoxb-<something>`) |
 | SLACK_SIGNING_SECRET | True | The signing secret from the basic information page of the bot configuration page in slack |
 | GITHUB_TOKEN | True | The github PAT used to create new repos |
-| GITHUB_ORG| False | The name of the GitHub org to create repos in |
-| SA_CERT_DIR | False | The directory prefix of where to search for `cert.pem` and `key.pem`. Not required, defaults to `/secrets` |
-| SA_KEY_THUMBPRINT | False | The SHA1 thumbprint without `:` for the Azure AD service account certificate | 
-| CLIENT_ID | False | The client ID for the app in AzureAD |
-| TENNANT_ID | False | The tennant ID for the AzureAD Tennant |
-| GROUP_ID | False | The group ID for the group to check membership of in AzureAD |
 
+## Configuration
+Configuration of all other variables is done via conf.yml. This can be set at container build time or runtime by overriding the `/app/conf.yml` file. At a minimum you must configure the `github.org` value. 
 
-## Secrets
-You must have configured the following secrets in your GCP Project before using/deploying this repo
-
-* gitbot-signing-key (mapped to the `SLACK_SIGNING_SECRET` env var)
-* gitbot-oauth-token (mapped to the `SLACK_BOT_TOKEN` env var)
-* gitbot-github-token (mapped to the `GITHUB_TOKEN` env var)
-* gitbot-azuread-cert (mapped to `/secrets/cert/cert.pem` in cloud run/docker)
-* gitbot-azuread-key (mapped to `/secrets/key/key.pem` in cloud run/docker)
-
-## Build and publish the container
-This project is built with GCP cloud build and ran on GCP cloud run
+## Running
+This project is designed to run as a container and can be run serverless. It has been tested on GCP Cloud Run specifically. 
 
 ## Configure slack
 Use the `app_manifest.yml` to set the slack permissions
 
-Dev:
+## Authentication
+### Azure-AD
+You will find an authentication provider for Azure AD in the `auth_providers` folder. It requires an Azure AD enterprise application to be configured with certificate based auth. You can enable Azure AD auth by configuring `slackbot.auth` to `azure-ad-auth` in the `conf.yml` file and uncommenting the `azure_ad_group` section in the `conf.yml` file.
 
-`https://app.slack.com/app-settings/T0380EW89NC/A038D7VCURW/app-manifest`
+If `cert_dir` is set to `/secrets` then the bot will look for the application certificate in `/secrets/cert/cert.pem` and the private key in `/secrets/key/key.pem`. It's designed to work this way to make working with secrets managers (like GCP Secrets) more easily. 
 
-Prod:
-
-`https://app.slack.com/app-settings/TCJ3PFY94/A03E91UG1CH/app-manifest`
-
-
-## Build cert for Azure AD
+### Build cert for Azure AD
 Make a certs directory and change to it
 
 ```shell
