@@ -1,8 +1,8 @@
 import requests
 import json
 import logging
+import yaml
 from base64 import b64decode as b64d
-from conf import TEMPLATES
 from github import Github, Repository, UnknownObjectException
 from github.Team import Team
 from github.NamedUser import NamedUser
@@ -34,7 +34,17 @@ class GitManager:
         self.get_teams()
         # public attrs
         self.visibilities = ['public', 'private', 'internal']
-        self.templates = TEMPLATES
+        # load the templates from the conf file which is expeted to be
+        # in the same directory
+        self._conf = None
+        with open('./conf.yml') as conffile:
+            try:
+                self._conf = yaml.safe_load(conffile)
+            except yaml.YAMLError as e:
+                logging.fatal(f'Error loading config file. Error: {e}')
+
+    def get_templates(self):
+        return self._conf['github']['templates']
 
     def _make_repo_internal(self, repo: str):
         if type(repo) is Repository.Repository:

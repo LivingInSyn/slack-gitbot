@@ -1,0 +1,6 @@
+slackbot:
+    auth: none # other option is azure-ad-group
+github:
+    templates:
+        - 'None' # DO NOT REMOVE
+        - 'actions/typescript-action'

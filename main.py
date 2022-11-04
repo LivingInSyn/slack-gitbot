@@ -76,7 +76,7 @@ def get_modal_blocks():
         opt = _get_static_select_opt(v, v.lower())
         modal['blocks'][3]['element']['options'].append(opt)
     # NOTE: this will require an update if there are more than 99 templates in the org
-    for t in GIT_MANAGER.templates[:99]: 
+    for t in GIT_MANAGER.get_templates()[:99]:
         opt = _get_static_select_opt(t, t.lower())
         modal['blocks'][4]['element']['options'].append(opt)
     # for t in GIT_MANAGER.get_teams():
