@@ -1,0 +1,15 @@
+slackbot:
+    auth: none # other option is azure-ad-auth
+github:
+    org: '' # the name of the github org
+    templates:
+        - 'None' # DO NOT REMOVE
+        - 'actions/typescript-action'
+# azure_ad_auth:
+#     sa_key_thumprint: '' # thumprint of the service account key
+#     client_id: '' # GUID for the app in azure AD
+#     tennant_id: '' # GUID for the tennant in azure AD
+#     group_id: '' # GUID for the group to check membership of
+#     # directory to look for the /cert and /key directories 
+#     # holding the cert and private key respectively
+#     cert_dir:  '/secrets' 

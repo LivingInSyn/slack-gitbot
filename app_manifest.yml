@@ -1,0 +1,30 @@
+display_information:
+  name: gitbot
+features:
+  bot_user:
+    display_name: gitbot
+    always_online: false
+  slash_commands:
+    - command: /new-git
+      url: https://{{$slackbot_url}}/slack/events
+      description: creates a new git repo
+      should_escape: false
+oauth_config:
+  scopes:
+    bot:
+      - chat:write
+      - chat:write.public
+      - commands
+      - chat:write.customize
+      # The following permissions must be enabled for AD Auth
+      # - users:read    
+      # - users.profile:read
+      # - users:read.email
+settings:
+  interactivity:
+    is_enabled: true
+    request_url: https://{{$slackbot_url}}/slack/events
+    message_menu_options_url: https://{{$slackbot_url}}/slack/events
+  org_deploy_enabled: false
+  socket_mode_enabled: false
+  token_rotation_enabled: false
