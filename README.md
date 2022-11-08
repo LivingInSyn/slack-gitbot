@@ -1,6 +1,8 @@
 # slack-gitbot
 slack-gitbot is a tool for controlling the creation of github repositories through chatops
 
+<img src="screenshots/gitbot_screenshot.png" data-canonical-src="screenshots/gitbot_screenshot.png" width="400"/>
+
 ## Environmental Variables
 
 The following environmental variables must be set.
@@ -11,14 +13,21 @@ The following environmental variables must be set.
 | SLACK_SIGNING_SECRET | True | The signing secret from the basic information page of the bot configuration page in slack |
 | GITHUB_TOKEN | True | The github PAT used to create new repos |
 
-## Configuration
+## App Configuration
 Configuration of all other variables is done via conf.yml. This can be set at container build time or runtime by overriding the `/app/conf.yml` file. At a minimum you must configure the `github.org` value. 
 
 ## Running
 This project is designed to run as a container and can be run serverless. It has been tested on GCP Cloud Run specifically. 
 
-## Configure slack
-Use the `app_manifest.yml` to set the slack permissions
+## Slack Configuration
+The first step to configure slack is to create a slack app:
+
+https://api.slack.com/apps
+
+You should modify and the `app_manifest.yml` to set the slack permissions, making sure to uncomment the permissions required to use azure-ad authentication if you want to use it. If you aren't a slack admin, you'll have to request for the app to be installed to your workspace.
+
+## Github Configuration
+You will need to provide a Github personal access token, preferably for a service account, with `org:admin` access. This PAT should be passed to slack-gitbot via the `GITHUB_TOKEN` environmental variable.
 
 ## Authentication
 ### Azure-AD
