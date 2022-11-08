@@ -137,3 +137,7 @@ terraform.tfstate.backup
 # Ignore the private key
 certs/key/key.pem
 .DS_Store
+
+# ignore ngrok manifest and any file starting with an underscore
+ngrok_app_manifest.yml
+_*
